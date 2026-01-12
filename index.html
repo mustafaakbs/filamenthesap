@@ -3,48 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>3D Print Cloud Pro</title>
+    <title>3D Teklif Pro V2.2</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root { --primary: #2563eb; --bg: #f8fafc; --text: #1e293b; --border: #e2e8f0; }
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 20px; }
+        :root { --primary: #2563eb; --secondary: #64748b; --bg: #f8fafc; --surface: #ffffff; --border: #e2e8f0; --danger: #ef4444; --success: #10b981; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: #1e293b; margin: 0; padding: 20px; }
+
+        /* Grid Yapısı */
+        .container { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 320px 1fr; gap: 20px; }
         
-        .container { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 320px 1fr; gap: 20px; }
-        .card { background: white; padding: 20px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+        /* Kartlar */
+        .card { background: var(--surface); padding: 15px; border-radius: 10px; border: 1px solid var(--border); margin-bottom: 15px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .card-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 10px; margin-bottom: 15px; font-weight: 700; color: #334155; }
         
-        h2 { font-size: 1.1rem; border-bottom: 2px solid var(--bg); padding-bottom: 10px; margin-top: 0; }
-        label { display: block; font-size: 0.85rem; font-weight: 600; color: #64748b; margin-top: 10px; }
-        input, select { width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; box-sizing: border-box; }
-        
+        /* Formlar */
+        label { display: block; font-size: 0.8rem; font-weight: 600; color: var(--secondary); margin-top: 8px; margin-bottom: 2px;}
+        input, select { width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 0.9rem; box-sizing: border-box; }
+        input:focus, select:focus { outline: 2px solid var(--primary); border-color: transparent; }
+
+        /* Sekmeler (Tab) */
+        .tabs { display: flex; gap: 5px; margin-bottom: 15px; background: #f1f5f9; padding: 5px; border-radius: 8px; }
+        .tab-btn { flex: 1; border: none; background: transparent; padding: 8px; border-radius: 6px; cursor: pointer; font-weight: 600; color: #64748b; transition: 0.2s; }
+        .tab-btn.active { background: white; color: var(--primary); box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
         /* Butonlar */
-        button { cursor: pointer; border: none; border-radius: 6px; font-weight: 600; transition: 0.2s; }
-        .btn-primary { background: var(--primary); color: white; padding: 10px 20px; width: 100%; }
-        .btn-danger { background: #fee2e2; color: #ef4444; padding: 4px 8px; font-size: 0.8rem; }
-        .btn-outline { background: white; border: 1px solid var(--primary); color: var(--primary); width: 100%; padding: 5px; }
-        
-        /* Cloud Butonları */
-        .cloud-status { padding: 15px; border-radius: 8px; text-align: center; margin-bottom: 20px; font-weight: bold; background: #e2e8f0; color: #64748b; }
-        .cloud-active { background: #dcfce7; color: #166534; border: 1px solid #86efac; }
-        .btn-save-cloud { background: #0f172a; color: white; width: 100%; padding: 12px; margin-top: 10px; display: flex; align-items: center; justify-content: center; gap: 8px;}
-        .btn-save-cloud:hover { background: #334155; }
+        .btn { width: 100%; padding: 10px; border: none; border-radius: 6px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 5px; transition: 0.2s; }
+        .btn-primary { background: var(--primary); color: white; }
+        .btn-primary:hover { background: #1d4ed8; }
+        .btn-success { background: var(--success); color: white; }
+        .btn-outline { background: white; border: 1px solid var(--border); color: #334155; }
+        .btn-danger { background: #fee2e2; color: var(--danger); }
+        .btn-sm { padding: 3px 8px; font-size: 0.75rem; width: auto; cursor: pointer; border-radius: 4px; margin-left: 5px; border: 1px solid transparent;}
+        .btn-edit-mode { background: #fff7ed; border: 1px solid #fdba74; color: #c2410c; } /* Düzenleme modu uyarısı */
 
-        /* Tablo */
-        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9rem; }
-        th { text-align: left; padding: 10px; background: #f1f5f9; }
-        td { padding: 10px; border-bottom: 1px solid var(--border); }
-        
-        .filament-item { display: flex; justify-content: space-between; align-items: center; background: #f8fafc; padding: 8px; margin-bottom: 5px; border-radius: 6px; font-size: 0.9rem; }
+        /* Geçmiş Teklifler Listesi */
+        .quote-item { background: #f8fafc; border: 1px solid var(--border); padding: 10px; margin-bottom: 5px; border-radius: 6px; font-size: 0.85rem; display: flex; justify-content: space-between; align-items: center; transition: 0.2s; }
+        .quote-item:hover { border-color: var(--primary); }
+        .quote-item.active-editing { border: 2px solid var(--success); background: #f0fdf4; } /* Düzenlenen öğe stili */
+        .quote-info strong { display: block; color: #334155; }
+        .quote-info span { color: #94a3b8; font-size: 0.75rem; }
 
-        /* Print */
+        /* Tablo ve Toplamlar */
+        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        th { text-align: left; padding: 8px; background: #f1f5f9; color: #475569; font-size: 0.8rem; }
+        td { padding: 8px; border-bottom: 1px solid var(--border); }
+        .total-section { display: flex; justify-content: flex-end; gap: 20px; margin-top: 20px; text-align: right; }
+        .grand-total { font-size: 1.5rem; font-weight: 800; color: var(--primary); }
+        
+        .fil-item { font-size: 0.8rem; padding: 5px; border-bottom: 1px dashed #eee; display: flex; justify-content: space-between; align-items: center; }
+
+        /* --- YAZDIRMA (TEKLİF KAĞIDI) --- */
         #printableArea { display: none; }
         @media print {
-            body { background: white; padding: 0; }
+            body { background: white; padding: 0; margin: 0; }
             .no-print { display: none !important; }
             .container { display: block; max-width: 100%; }
             #printableArea { display: block; padding: 40px; }
-            .invoice-table { width: 100%; border-collapse: collapse; }
-            .invoice-table th, .invoice-table td { border: 1px solid #ddd; padding: 8px; }
-            .invoice-header { display: flex; justify-content: space-between; border-bottom: 2px solid black; padding-bottom: 10px; margin-bottom: 20px;}
+            
+            .invoice-header { display: flex; justify-content: space-between; border-bottom: 2px solid #000; padding-bottom: 20px; margin-bottom: 30px; }
+            .company-name { font-size: 1.8rem; font-weight: bold; color: var(--primary); margin: 0; }
+            .meta-data { text-align: right; }
+
+            .print-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+            .print-table th { background: #eee !important; border: 1px solid #000; padding: 8px; font-weight: bold; -webkit-print-color-adjust: exact; }
+            .print-table td { border: 1px solid #ccc; padding: 8px; }
+            
+            .print-footer { display: flex; justify-content: space-between; margin-top: 40px; }
+            .signature-box { border-top: 1px solid #000; width: 200px; text-align: center; padding-top: 10px; margin-top: 40px; }
         }
     </style>
 </head>
@@ -52,88 +79,168 @@
 
 <div class="container no-print">
     <div class="sidebar">
-        <div class="card">
-            <h2>☁️ Bulut Bağlantısı</h2>
-            <div id="statusBox" class="cloud-status">Bağlanıyor...</div>
-            <p style="font-size:0.8rem; color:#666;">Ayarları değiştirdiğinizde aşağıdaki butona basın. Google sunucularına kaydolur.</p>
-            <button class="btn-save-cloud" onclick="saveToCloud()">
-                💾 Ayarları Buluta Kaydet
-            </button>
+        <div class="card" style="border-left: 4px solid var(--primary);">
+            <div id="cloudStatus" style="font-size:0.85rem; font-weight:bold; color:#64748b; margin-bottom:10px;">☁️ Bağlanıyor...</div>
+            <button class="btn btn-primary" onclick="saveSettings()">💾 Genel Ayarları Kaydet</button>
         </div>
 
         <div class="card">
-            <h2>⚙️ Ayarlar</h2>
-            <label>Firma Adı</label><input type="text" id="cfg_company">
-            <label>Elektrik (TL/kWh)</label><input type="number" id="cfg_elec">
-            <label>Yazıcı Gücü (Watt)</label><input type="number" id="cfg_power">
+            <div class="card-header">⚙️ Maliyet Ayarları</div>
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px;">
+                <div><label>Elektrik (TL/kW)</label><input type="number" id="cfg_elec"></div>
+                <div><label>Güç (Watt)</label><input type="number" id="cfg_power"></div>
+            </div>
+            <label>Makine Yıpranma (TL/Saat)</label><input type="number" id="cfg_depreciation" placeholder="Örn: 5">
             <label>Kâr Oranı (%)</label><input type="number" id="cfg_margin">
-            <label>KDV Oranı (%)</label><input type="number" id="cfg_tax">
+            <label>KDV (%)</label><input type="number" id="cfg_tax">
+            <label>Firma Adı</label><input type="text" id="cfg_company">
         </div>
 
         <div class="card">
-            <h2>🧵 Filamentler</h2>
-            <div id="filamentList"></div>
-            <div style="margin-top: 10px; border-top: 1px solid #eee; padding-top: 10px;">
-                <input type="text" id="newFilName" placeholder="Adı (Örn: TPU)" style="margin-bottom: 5px;">
-                <input type="number" id="newFilPrice" placeholder="Fiyat (TL)">
-                <button class="btn-outline" onclick="addFilament()" style="margin-top: 5px;">+ Ekle</button>
+            <div class="card-header">📂 Kayıtlı Teklifler</div>
+            <div id="savedQuotesList" style="max-height: 250px; overflow-y: auto;">
+                <div style="text-align:center; color:#999; font-size:0.8rem;">Yükleniyor...</div>
             </div>
         </div>
     </div>
 
     <div class="main">
-        <div class="card">
-            <h2>📝 Proje</h2>
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                <div><label>Müşteri</label><input type="text" id="custName"></div>
-                <div><label>Proje</label><input type="text" id="projName"></div>
+        <div class="card" id="projectCard">
+            <div class="card-header">
+                📝 Proje Bilgileri
+                <span id="editModeBadge" style="display:none; font-size:0.7rem; background:#fff7ed; color:#c2410c; padding:3px 8px; border-radius:10px; border:1px solid #fdba74;">DÜZENLEME MODU</span>
+            </div>
+            
+            <div style="display:grid; grid-template-columns: 1fr 1fr; gap:10px; margin-bottom:10px;">
+                <div><label>Müşteri Adı</label><input type="text" id="custName"></div>
+                <div><label>Proje Başlığı</label><input type="text" id="projName"></div>
+            </div>
+
+            <div style="display:flex; gap:10px;">
+                <button id="btnSaveQuote" class="btn btn-success" onclick="saveQuoteToCloud()">☁️ TEKLİFİ KAYDET</button>
+                <button class="btn btn-outline" onclick="resetForm(true)">✨ Yeni / Temizle</button>
             </div>
         </div>
 
         <div class="card">
-            <h2>➕ Parça Ekle</h2>
-            <div style="display: grid; grid-template-columns: 2fr 2fr 1fr 1fr auto; gap: 10px; align-items: end;">
-                <div><label>Parça</label><input type="text" id="pName" placeholder="Ad"></div>
-                <div><label>Malzeme</label><select id="pMat"></select></div>
-                <div><label>Gr</label><input type="number" id="pWeight" placeholder="0"></div>
-                <div><label>Saat</label><input type="number" id="pTime" placeholder="0"></div>
-                <button class="btn-primary" onclick="addPart()">EKLE</button>
+            <div class="tabs">
+                <button class="tab-btn active" onclick="switchTab('print')">🖨️ 3D Baskı Ekle</button>
+                <button class="tab-btn" onclick="switchTab('manual')">⚡ Ekstra / Elektronik</button>
+            </div>
+
+            <div id="tab_print" class="tab-content active">
+                <div style="display:grid; grid-template-columns: 2fr 1.5fr 0.8fr 0.8fr 0.8fr auto; gap:8px; align-items:end;">
+                    <div><label>Parça Adı</label><input type="text" id="pName" placeholder="Gövde"></div>
+                    <div><label>Filament</label><select id="pMat"></select></div>
+                    <div><label>Gr</label><input type="number" id="pWeight" placeholder="0"></div>
+                    <div><label>Saat</label><input type="number" id="pTime" placeholder="0"></div>
+                    <div><label>Adet</label><input type="number" id="pQty" value="1"></div>
+                    <button class="btn btn-primary" style="width:auto;" onclick="addPrintItem()">EKLE</button>
+                </div>
+                
+                <div style="margin-top:15px; border-top:1px solid #eee; padding-top:10px;">
+                    <label style="margin-bottom:5px;">➕ Yeni Filament Ekle / Mevcutları Düzenle</label>
+                    <div style="display:flex; gap:5px; margin-bottom:10px;">
+                        <input type="text" id="newFilName" placeholder="Ad (Örn: ABS)" style="width:50%;">
+                        <input type="number" id="newFilPrice" placeholder="Fiyat (TL)" style="width:30%;">
+                        <button class="btn btn-outline" style="width:20%; font-size:0.8rem;" onclick="addFilament()">Ekle</button>
+                    </div>
+                    
+                    <div id="filamentManagerList" style="max-height:100px; overflow-y:auto; border:1px solid #f1f5f9; padding:5px; border-radius:6px; background:#f8fafc;">
+                        </div>
+                </div>
+            </div>
+
+            <div id="tab_manual" class="tab-content">
+                <div style="display:grid; grid-template-columns: 3fr 1fr 1fr auto; gap:10px; align-items:end;">
+                    <div><label>İşlem / Parça Adı</label><input type="text" id="mName" placeholder="Örn: Arduino, Boyama, Montaj"></div>
+                    <div><label>Adet</label><input type="number" id="mQty" value="1"></div>
+                    <div><label>Birim Fiyat (TL)</label><input type="number" id="mPrice" placeholder="Satış Fiyatı"></div>
+                    <button class="btn btn-primary" style="width:auto; background:#10b981;" onclick="addManualItem()">LİSTEYE EKLE</button>
+                </div>
+                <div style="margin-top:5px; font-size:0.8rem; color:#666;">* Manuel eklemelerde kâr oranı uygulanmaz, direkt satış fiyatı girin.</div>
             </div>
         </div>
 
         <div class="card">
-            <h2>Sepet</h2>
             <table>
-                <thead><tr><th>Parça</th><th>Malzeme</th><th>Tutar</th><th></th></tr></thead>
+                <thead>
+                    <tr>
+                        <th>Tür</th>
+                        <th>Açıklama</th>
+                        <th>Detaylar</th>
+                        <th>Adet</th>
+                        <th style="text-align:right;">Tutar</th>
+                        <th></th>
+                    </tr>
+                </thead>
                 <tbody id="cartBody"></tbody>
             </table>
-            <div style="text-align: right; margin-top: 20px; font-size: 1.2rem; font-weight: bold;">
-                Toplam: <span id="dspGrand" style="color:var(--primary)">0.00 ₺</span>
+
+            <div class="total-section">
+                <div>
+                    <div>Ara Toplam: <span id="dspSub">0.00</span> ₺</div>
+                    <div>KDV (%<span id="dspTaxRate">20</span>): <span id="dspTaxAmt">0.00</span> ₺</div>
+                    <div class="grand-total" id="dspGrand">0.00 ₺</div>
+                </div>
             </div>
-            <button class="btn-primary" style="margin-top: 20px; background: #334155;" onclick="window.print()">🖨️ Teklifi Yazdır</button>
+
+            <button class="btn btn-primary" style="margin-top:20px; background:#334155;" onclick="window.print()">🖨️ YAZDIR / PDF AL</button>
         </div>
     </div>
 </div>
 
 <div id="printableArea">
     <div class="invoice-header">
-        <div><h1 id="prtCompany" style="margin:0; color:#2563eb;">FİRMA</h1><p>3D Hizmetleri</p></div>
-        <div style="text-align: right;"><h2>TEKLİF</h2><p id="prtDate"></p></div>
+        <div>
+            <h1 class="company-name" id="prtCompany">FİRMA ADI</h1>
+            <p>3D Baskı, Prototipleme ve Elektronik Hizmetleri</p>
+        </div>
+        <div class="meta-data">
+            <h2 style="margin:0;">FİYAT TEKLİFİ</h2>
+            <p id="prtDate">01.01.2024</p>
+        </div>
     </div>
-    <p><strong>Sayın:</strong> <span id="prtCust"></span></p>
-    <table class="invoice-table">
-        <thead><tr style="background:#eee;"><th>Parça</th><th>Malzeme</th><th>Gr</th><th>Saat</th><th style="text-align:right;">Fiyat</th></tr></thead>
+
+    <div style="margin-bottom:20px;">
+        <strong>Sayın:</strong> <span id="prtCust"></span><br>
+        <strong>Proje:</strong> <span id="prtProj"></span>
+    </div>
+
+    <table class="print-table">
+        <thead>
+            <tr>
+                <th>Açıklama</th>
+                <th>Malzeme / İşlem</th>
+                <th>Birim Detay</th>
+                <th>Miktar</th>
+                <th style="text-align:right;">Toplam Fiyat</th>
+            </tr>
+        </thead>
         <tbody id="prtTable"></tbody>
     </table>
-    <div style="text-align: right; margin-top: 20px;"><h3>GENEL TOPLAM: <span id="prtGrand">0.00</span> ₺</h3></div>
+
+    <div style="text-align:right;">
+        <p>Ara Toplam: <span id="prtSub">0.00</span> ₺</p>
+        <p>KDV (%<span id="prtTaxRate"></span>): <span id="prtTaxAmt">0.00</span> ₺</p>
+        <h3 style="font-size:1.4rem;">GENEL TOPLAM: <span id="prtGrand">0.00</span> ₺</h3>
+    </div>
+
+    <div class="print-footer">
+        <div class="signature-box">
+            Teklifi Hazırlayan<br><br><br>................................
+        </div>
+        <div class="signature-box">
+            Onaylayan / Müşteri<br><br><br>................................
+        </div>
+    </div>
 </div>
 
 <script type="module">
-    // Firebase Kütüphanelerini CDN'den çekiyoruz
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-    import { getDatabase, ref, set, onValue } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+    import { getDatabase, ref, set, push, onValue, remove, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
 
-    // --- SİZİN FIREBASE BİLGİLERİNİZ ---
+    // --- FIREBASE AYARLARI ---
     const firebaseConfig = {
       apiKey: "AIzaSyCaIPCr-1yDII529VK_83uvnjUHhquisDA",
       authDomain: "filament-51e0a.firebaseapp.com",
@@ -145,154 +252,303 @@
       measurementId: "G-PP30K2BB77"
     };
 
-    // Firebase'i Başlat
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app);
+    
+    // Referanslar
     const settingsRef = ref(db, 'settings');
+    const quotesRef = ref(db, 'quotes');
 
-    // --- Veri Değişkenleri ---
-    let data = {
-        company: "Firma Adı Girin",
+    // Durum Değişkenleri
+    let settings = {
+        company: "My 3D Workshop",
         elecPrice: 3.5,
         power: 300,
+        depreciation: 5, 
         margin: 50,
         tax: 20,
-        filaments: [{ id: 1, name: "PLA Demo", price: 500 }]
+        filaments: [{ id: 1, name: "PLA", price: 500 }]
     };
-    let cart = [];
+    
+    let cart = []; 
+    let currentEditingId = null; // Şu an düzenlenen teklif ID'si
 
-    // --- SAYFA AÇILINCA BULUTTAN VERİ ÇEK ---
+    // --- BAŞLANGIÇ ---
     onValue(settingsRef, (snapshot) => {
-        const cloudData = snapshot.val();
-        const statusBox = document.getElementById('statusBox');
+        const val = snapshot.val();
+        if(val) settings = val;
+        renderUI();
+        document.getElementById('cloudStatus').innerText = "✅ Bulut Aktif";
+        document.getElementById('cloudStatus').style.color = "#10b981";
+    });
+
+    onValue(quotesRef, (snapshot) => {
+        const listDiv = document.getElementById('savedQuotesList');
+        listDiv.innerHTML = "";
+        const quotes = snapshot.val();
         
-        if (cloudData) {
-            data = cloudData; 
-            statusBox.innerText = "✅ Buluta Bağlı - Veriler Güncel";
-            statusBox.className = "cloud-status cloud-active";
-            initUI(); 
+        if(quotes) {
+            Object.entries(quotes).reverse().forEach(([key, q]) => { 
+                const date = new Date(q.timestamp).toLocaleDateString();
+                // Düzenlenen öğeyi vurgula
+                const activeClass = (key === currentEditingId) ? 'active-editing' : '';
+                
+                const div = document.createElement('div');
+                div.className = `quote-item ${activeClass}`;
+                div.innerHTML = `
+                    <div class="quote-info" onclick="loadQuote('${key}')" style="cursor:pointer; flex:1;">
+                        <strong>${q.customer || 'İsimsiz'}</strong>
+                        <span>${date} - ${q.total} ₺</span>
+                    </div>
+                    <div>
+                        <button class="btn-sm btn-outline" onclick="loadQuote('${key}')">Düzenle</button>
+                        <button class="btn-sm btn-danger" onclick="deleteQuote('${key}')">Sil</button>
+                    </div>
+                `;
+                listDiv.appendChild(div);
+            });
         } else {
-            statusBox.innerText = "⚠️ Bulut Boş - İlk Kaydı Yapın";
-            initUI();
+            listDiv.innerHTML = "<div style='text-align:center; padding:10px; font-size:0.8rem;'>Henüz kayıtlı teklif yok.</div>";
         }
     });
 
-    // --- BULUTA KAYDET ---
-    window.saveToCloud = function() {
-        // Formdan güncel verileri topla
-        data.company = document.getElementById('cfg_company').value;
-        data.elecPrice = parseFloat(document.getElementById('cfg_elec').value);
-        data.power = parseFloat(document.getElementById('cfg_power').value);
-        data.margin = parseFloat(document.getElementById('cfg_margin').value);
-        data.tax = parseFloat(document.getElementById('cfg_tax').value);
-        
-        // Firebase'e gönder
-        set(settingsRef, data)
-            .then(() => {
-                alert("Başarılı! Ayarlar kaydedildi.");
-            })
-            .catch((error) => {
-                alert("Hata oluştu: " + error);
-            });
+    // --- FONKSİYONLAR ---
+    
+    window.switchTab = (tabName) => {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+        document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+        document.getElementById('tab_' + tabName).classList.add('active');
+        event.target.classList.add('active');
     };
 
-    // --- UI GÜNCELLEMELERİ ---
-    function initUI() {
-        document.getElementById('cfg_company').value = data.company || "";
-        document.getElementById('cfg_elec').value = data.elecPrice;
-        document.getElementById('cfg_power').value = data.power;
-        document.getElementById('cfg_margin').value = data.margin;
-        document.getElementById('cfg_tax').value = data.tax;
-        renderFilaments();
-        updateSelect();
+    window.saveSettings = () => {
+        settings.company = document.getElementById('cfg_company').value;
+        settings.elecPrice = parseFloat(document.getElementById('cfg_elec').value);
+        settings.power = parseFloat(document.getElementById('cfg_power').value);
+        settings.depreciation = parseFloat(document.getElementById('cfg_depreciation').value) || 0;
+        settings.margin = parseFloat(document.getElementById('cfg_margin').value);
+        settings.tax = parseFloat(document.getElementById('cfg_tax').value);
+        set(settingsRef, settings).then(() => alert("Ayarlar Kaydedildi!"));
+    };
+
+    // YENİ: Teklif Kaydetme Mantığı (Güncelleme Desteği)
+    window.saveQuoteToCloud = () => {
+        if(cart.length === 0) { alert("Liste boş! Kaydedilecek bir şey yok."); return; }
+        
+        const grandTotal = document.getElementById('dspGrand').innerText;
+        const quoteData = {
+            customer: document.getElementById('custName').value,
+            project: document.getElementById('projName').value,
+            cart: cart,
+            total: grandTotal,
+            timestamp: Date.now() // Her güncellemede tarih yenilenir
+        };
+        
+        if(currentEditingId) {
+            // Güncelleme Modu
+            update(ref(db, 'quotes/' + currentEditingId), quoteData)
+                .then(() => alert("Teklif Güncellendi!"))
+                .catch(e => alert("Hata: " + e));
+        } else {
+            // Yeni Kayıt Modu
+            push(quotesRef, quoteData)
+                .then((snap) => {
+                    alert("Yeni Teklif Oluşturuldu!");
+                    currentEditingId = snap.key; // Kayıttan sonra düzenleme moduna geç
+                    updateEditModeUI();
+                });
+        }
+    };
+
+    // YENİ: Teklif Yükleme
+    window.loadQuote = (key) => {
+        const specificRef = ref(db, 'quotes/' + key);
+        onValue(specificRef, (snap) => {
+            const data = snap.val();
+            if(data) {
+                currentEditingId = key; // ID'yi hafızaya al
+                
+                document.getElementById('custName').value = data.customer;
+                document.getElementById('projName').value = data.project;
+                cart = data.cart || [];
+                
+                renderCart();
+                updateEditModeUI(); // Arayüzü güncelle
+                
+                // Listeyi yenile ki vurgu (highlight) çalışsın
+                // (Otomatik listener zaten yapacak ama hızlı tepki için manuel çağırabiliriz, şimdilik gerek yok)
+            }
+        }, { onlyOnce: true });
+    };
+
+    // YENİ: Teklif Silme
+    window.deleteQuote = (key) => {
+        if(confirm("Bu teklifi kalıcı olarak silmek istiyor musunuz?")) {
+            remove(ref(db, 'quotes/' + key)).then(() => {
+                // Eğer sildiğimiz teklif şu an ekranda açıksa, ekranı temizle
+                if(currentEditingId === key) {
+                    resetForm(false); 
+                }
+            });
+        }
+    };
+
+    // YENİ: Form Sıfırlama
+    window.resetForm = (confirmReset) => {
+        if(confirmReset && cart.length > 0 && !confirm("Kaydedilmemiş değişiklikler kaybolacak. Yeni teklife geçilsin mi?")) return;
+        
+        currentEditingId = null;
+        cart = [];
+        document.getElementById('custName').value = "";
+        document.getElementById('projName').value = "";
+        renderCart();
+        updateEditModeUI();
+    };
+
+    // Arayüz Düzenleme Modu Kontrolü
+    function updateEditModeUI() {
+        const btn = document.getElementById('btnSaveQuote');
+        const badge = document.getElementById('editModeBadge');
+        const card = document.getElementById('projectCard');
+
+        if(currentEditingId) {
+            btn.innerText = "💾 GÜNCELLE";
+            btn.classList.remove('btn-success');
+            btn.classList.add('btn-primary');
+            badge.style.display = 'inline-block';
+            card.style.border = "2px solid #fdba74"; // Turuncu çerçeve
+        } else {
+            btn.innerText = "☁️ TEKLİFİ KAYDET";
+            btn.classList.remove('btn-primary');
+            btn.classList.add('btn-success');
+            badge.style.display = 'none';
+            card.style.border = "1px solid #e2e8f0"; // Normal çerçeve
+        }
     }
 
-    // Filament İşlemleri
-    window.addFilament = function() {
+    // Filament Yönetimi
+    window.addFilament = () => {
         const name = document.getElementById('newFilName').value;
         const price = parseFloat(document.getElementById('newFilPrice').value);
         if(name && price) {
-            if(!data.filaments) data.filaments = [];
-            data.filaments.push({ id: Date.now(), name, price });
-            renderFilaments();
-            updateSelect();
+            if(!settings.filaments) settings.filaments = [];
+            settings.filaments.push({ id: Date.now(), name, price });
+            renderUI(); 
+            saveSettings(); 
+            document.getElementById('newFilName').value = '';
+            document.getElementById('newFilPrice').value = '';
         }
-    }
+    };
 
-    window.removeFilament = function(id) {
-        if(confirm('Sil?')) {
-            data.filaments = data.filaments.filter(f => f.id !== id);
-            renderFilaments();
-            updateSelect();
+    window.deleteFilament = (id) => {
+        if(confirm("Silmek istiyor musunuz?")) {
+            settings.filaments = settings.filaments.filter(f => f.id !== id);
+            renderUI(); saveSettings();
         }
-    }
+    };
 
-    function renderFilaments() {
-        const list = document.getElementById('filamentList');
-        list.innerHTML = '';
-        if(data.filaments) {
-            data.filaments.forEach(f => {
-                list.innerHTML += `<div class="filament-item"><span>${f.name} (${f.price} TL)</span><button class="btn-danger" onclick="removeFilament(${f.id})">Sil</button></div>`;
-            });
-        }
-    }
-
-    function updateSelect() {
-        const sel = document.getElementById('pMat');
-        sel.innerHTML = '';
-        if(data.filaments) {
-            data.filaments.forEach(f => {
-                const opt = document.createElement('option');
-                opt.value = f.price;
-                opt.text = f.name;
-                sel.appendChild(opt);
-            });
-        }
-    }
-
-    // Parça İşlemleri
-    window.addPart = function() {
-        const name = document.getElementById('pName').value || 'Parça';
+    window.addPrintItem = () => {
+        const name = document.getElementById('pName').value || "Parça";
         const weight = parseFloat(document.getElementById('pWeight').value);
         const time = parseFloat(document.getElementById('pTime').value);
+        const qty = parseFloat(document.getElementById('pQty').value) || 1;
         const matSel = document.getElementById('pMat');
         
         if(!weight || !time || !matSel.value) return;
-
+        
         cart.push({
-            name, weight, time,
+            type: 'print', name, weight, time, qty,
             matPrice: parseFloat(matSel.value),
             matName: matSel.options[matSel.selectedIndex].text
         });
         renderCart();
+    };
+
+    window.addManualItem = () => {
+        const name = document.getElementById('mName').value;
+        const price = parseFloat(document.getElementById('mPrice').value);
+        const qty = parseFloat(document.getElementById('mQty').value) || 1;
+        if(!name || !price) return;
+        cart.push({ type: 'manual', name: name, qty: qty, price: price });
+        renderCart();
+    };
+
+    window.removePart = (idx) => { cart.splice(idx, 1); renderCart(); };
+
+    // --- RENDER ---
+    function renderUI() {
+        document.getElementById('cfg_company').value = settings.company;
+        document.getElementById('cfg_elec').value = settings.elecPrice;
+        document.getElementById('cfg_power').value = settings.power;
+        document.getElementById('cfg_depreciation').value = settings.depreciation || 0;
+        document.getElementById('cfg_margin').value = settings.margin;
+        document.getElementById('cfg_tax').value = settings.tax;
+
+        const sel = document.getElementById('pMat');
+        const managerList = document.getElementById('filamentManagerList');
+        sel.innerHTML = ""; managerList.innerHTML = "";
+
+        if(settings.filaments) {
+            settings.filaments.forEach(f => {
+                const opt = document.createElement('option');
+                opt.value = f.price; opt.text = f.name; sel.appendChild(opt);
+
+                const item = document.createElement('div');
+                item.className = 'fil-item';
+                item.innerHTML = `<span><b>${f.name}</b> (${f.price} TL)</span><span onclick="deleteFilament(${f.id})" style="color:red; cursor:pointer;">[SİL]</span>`;
+                managerList.appendChild(item);
+            });
+        }
     }
-    
-    window.removePart = function(idx) { cart.splice(idx, 1); renderCart(); }
 
     function renderCart() {
-        const body = document.getElementById('cartBody');
+        const tbody = document.getElementById('cartBody');
         const prtBody = document.getElementById('prtTable');
-        body.innerHTML = ''; prtBody.innerHTML = '';
+        tbody.innerHTML = ""; prtBody.innerHTML = "";
         
         let subTotal = 0;
-        cart.forEach((p, i) => {
-            const matCost = (p.matPrice / 1000) * p.weight;
-            const elecCost = (data.power / 1000) * p.time * data.elecPrice;
-            const cost = (matCost + elecCost) * (1 + (data.margin / 100));
-            subTotal += cost;
 
-            body.innerHTML += `<tr><td>${p.name}</td><td>${p.matName}</td><td>${cost.toFixed(2)} TL</td><td><button class="btn-danger" onclick="removePart(${i})">X</button></td></tr>`;
-            prtBody.innerHTML += `<tr><td>${p.name}</td><td>${p.matName}</td><td>${p.weight}</td><td>${p.time}</td><td style="text-align:right;">${cost.toFixed(2)} TL</td></tr>`;
+        cart.forEach((p, i) => {
+            let rowTotal = 0;
+            let detailTxt = "";
+            let desc = "";
+
+            if(p.type === 'print') {
+                const matCost = (p.matPrice / 1000) * p.weight;
+                const elecCost = (settings.power / 1000) * p.time * settings.elecPrice;
+                const depCost = (settings.depreciation || 0) * p.time;
+                const unitCost = (matCost + elecCost + depCost) * (1 + (settings.margin / 100));
+                rowTotal = unitCost * p.qty;
+                desc = `<span style='color:#2563eb;'>3D Baskı</span>`;
+                detailTxt = `${p.matName} (${p.weight}gr / ${p.time}sa)`;
+            } else {
+                rowTotal = p.price * p.qty;
+                desc = `<span style='color:#10b981;'>Ekstra</span>`;
+                detailTxt = "-";
+            }
+            
+            subTotal += rowTotal;
+
+            tbody.innerHTML += `<tr><td>${desc}</td><td>${p.name}</td><td style="font-size:0.8rem; color:#666;">${detailTxt}</td><td>${p.qty}</td><td style="text-align:right;">${rowTotal.toFixed(2)} ₺</td><td style="text-align:center;"><button class="btn-sm btn-danger" onclick="removePart(${i})">X</button></td></tr>`;
+            prtBody.innerHTML += `<tr><td>${p.name}</td><td>${p.type === 'print' ? p.matName : 'Ekstra'}</td><td>${p.type === 'print' ? (p.weight+'gr / '+p.time+'sa') : '-'}</td><td>${p.qty}</td><td style="text-align:right;">${rowTotal.toFixed(2)} ₺</td></tr>`;
         });
 
-        const grand = subTotal + (subTotal * (data.tax/100));
+        const taxAmt = subTotal * (settings.tax / 100);
+        const grand = subTotal + taxAmt;
+
+        document.getElementById('dspSub').innerText = subTotal.toFixed(2);
+        document.getElementById('dspTaxRate').innerText = settings.tax;
+        document.getElementById('dspTaxAmt').innerText = taxAmt.toFixed(2);
         document.getElementById('dspGrand').innerText = grand.toFixed(2) + " ₺";
-        document.getElementById('prtGrand').innerText = grand.toFixed(2);
-        
-        // Print Details
-        document.getElementById('prtCompany').innerText = data.company;
+
+        document.getElementById('prtCompany').innerText = settings.company;
         document.getElementById('prtDate').innerText = new Date().toLocaleDateString();
         document.getElementById('prtCust').innerText = document.getElementById('custName').value;
+        document.getElementById('prtProj').innerText = document.getElementById('projName').value;
+        document.getElementById('prtSub').innerText = subTotal.toFixed(2);
+        document.getElementById('prtTaxRate').innerText = settings.tax;
+        document.getElementById('prtTaxAmt').innerText = taxAmt.toFixed(2);
+        document.getElementById('prtGrand').innerText = grand.toFixed(2);
     }
 </script>
 
