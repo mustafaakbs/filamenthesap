@@ -1,0 +1,445 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Print Quote Pro</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #64748b;
+            --success: #10b981;
+            --danger: #ef4444;
+            --surface: #ffffff;
+            --bg: #f1f5f9;
+            --border: #e2e8f0;
+            --text-main: #1e293b;
+            --text-light: #64748b;
+        }
+
+        body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text-main); margin: 0; padding: 20px; -webkit-print-color-adjust: exact; }
+        
+        /* --- LAYOUT & GRID --- */
+        .container { max-width: 1100px; margin: 0 auto; display: grid; grid-template-columns: 300px 1fr; gap: 20px; }
+        
+        /* --- KART TASARIMLARI --- */
+        .card { background: var(--surface); padding: 20px; border-radius: 12px; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); border: 1px solid var(--border); margin-bottom: 20px; }
+        h2 { font-size: 1.1rem; color: var(--text-main); border-bottom: 2px solid var(--bg); padding-bottom: 10px; margin-top: 0; display: flex; justify-content: space-between; align-items: center; }
+        h3 { font-size: 0.95rem; text-transform: uppercase; color: var(--text-light); margin: 15px 0 5px 0; letter-spacing: 0.5px; }
+
+        /* --- FORM ELEMANLARI --- */
+        label { display: block; font-size: 0.85rem; font-weight: 500; margin-bottom: 4px; color: var(--text-light); }
+        input, select { width: 100%; padding: 8px 12px; border: 1px solid var(--border); border-radius: 6px; font-family: inherit; font-size: 0.9rem; transition: 0.2s; box-sizing: border-box; }
+        input:focus, select:focus { border-color: var(--primary); outline: none; ring: 2px solid rgba(37, 99, 235, 0.1); }
+        
+        /* --- BUTONLAR --- */
+        button { cursor: pointer; border: none; font-weight: 600; border-radius: 6px; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 5px; }
+        .btn-primary { background: var(--primary); color: white; padding: 10px 20px; width: 100%; }
+        .btn-primary:hover { background: #1d4ed8; }
+        .btn-sm { padding: 4px 8px; font-size: 0.8rem; }
+        .btn-danger { background: rgba(239, 68, 68, 0.1); color: var(--danger); }
+        .btn-danger:hover { background: var(--danger); color: white; }
+        .btn-print { background: var(--text-main); color: white; padding: 12px; width: 100%; font-size: 1.1rem; margin-top: 20px; }
+        .btn-outline { background: transparent; border: 1px solid var(--primary); color: var(--primary); padding: 6px 12px; width: 100%; margin-top: 10px;}
+
+        /* --- TABLO --- */
+        table { width: 100%; border-collapse: collapse; font-size: 0.9rem; }
+        th { text-align: left; padding: 12px; background: #f8fafc; color: var(--text-light); font-weight: 600; border-bottom: 2px solid var(--border); }
+        td { padding: 12px; border-bottom: 1px solid var(--border); }
+        tr:last-child td { border-bottom: none; }
+        .cost-cell { font-family: 'Courier New', monospace; font-weight: 700; color: var(--text-main); }
+
+        /* --- SAĞ TARAF --- */
+        .filament-tag { display: flex; justify-content: space-between; align-items: center; background: #f8fafc; padding: 6px 10px; border-radius: 6px; margin-bottom: 6px; font-size: 0.85rem; border: 1px solid var(--border); }
+        
+        .summary-bar { display: flex; justify-content: flex-end; gap: 30px; margin-top: 20px; padding-top: 20px; border-top: 2px dashed var(--border); }
+        .summary-item { text-align: right; }
+        .summary-label { font-size: 0.85rem; color: var(--text-light); }
+        .summary-value { font-size: 1.5rem; font-weight: 800; color: var(--primary); }
+
+        /* --- GİZLİ TEKLİF ALANI (SADECE PRINT İÇİN) --- */
+        #printableArea { display: none; }
+
+        /* --- YAZDIRMA (PRINT) CSS --- */
+        @media print {
+            body { background: white; padding: 0; margin: 0; font-size: 12pt; }
+            .no-print { display: none !important; } /* Arayüzü gizle */
+            .container { display: block; width: 100%; max-width: 100%; }
+            
+            #printableArea { 
+                display: block; 
+                padding: 40px;
+            }
+
+            .invoice-header { display: flex; justify-content: space-between; margin-bottom: 40px; border-bottom: 2px solid #000; padding-bottom: 20px; }
+            .company-info h1 { margin: 0; color: var(--primary); font-size: 24pt; }
+            .invoice-details { text-align: right; }
+            
+            .invoice-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
+            .invoice-table th { background: #f1f5f9 !important; border-bottom: 2px solid #000; padding: 10px; text-align: left; -webkit-print-color-adjust: exact; }
+            .invoice-table td { border-bottom: 1px solid #ddd; padding: 10px; }
+            
+            .invoice-footer { display: flex; justify-content: flex-end; }
+            .invoice-totals { width: 300px; text-align: right; }
+            .total-row { display: flex; justify-content: space-between; padding: 5px 0; }
+            .grand-total { font-size: 16pt; font-weight: bold; border-top: 2px solid #000; padding-top: 10px; margin-top: 10px; }
+            
+            .signature { margin-top: 80px; display: flex; justify-content: space-between; font-size: 0.9rem; }
+            .sign-box { border-top: 1px solid #000; width: 200px; text-align: center; padding-top: 10px; }
+        }
+
+        /* Mobil Düzen */
+        @media (max-width: 768px) {
+            .container { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container no-print">
+    
+    <div class="sidebar">
+        <div class="card">
+            <h2>⚙️ Ayarlar</h2>
+            <label>Firmanızın Adı (Teklif Başlığı)</label>
+            <input type="text" id="myCompany" value="3D Baskı Atölyesi" oninput="saveData()">
+
+            <h3>Maliyet Verileri</h3>
+            <label>Elektrik (TL/kWh)</label>
+            <input type="number" id="elecPrice" value="2.6" oninput="saveData()">
+            <label>Yazıcı Gücü (Watt)</label>
+            <input type="number" id="power" value="300" oninput="saveData()">
+            
+            <h3>Satış Stratejisi</h3>
+            <label>Kâr Oranı (%)</label>
+            <input type="number" id="margin" value="50" oninput="saveData()">
+            <label>KDV Oranı (%)</label>
+            <input type="number" id="tax" value="20" oninput="saveData()">
+        </div>
+
+        <div class="card">
+            <h2>🧵 Filamentler</h2>
+            <div id="filamentList"></div>
+            
+            <div style="margin-top:15px; border-top:1px solid #eee; padding-top:10px;">
+                <input type="text" id="newFilName" placeholder="Adı (Örn: TPU)" style="margin-bottom:5px;">
+                <input type="number" id="newFilPrice" placeholder="Fiyat (TL)" style="margin-bottom:5px;">
+                <button class="btn-outline" onclick="addFilament()">+ Ekle</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="card">
+            <h2>📝 Proje Detayları</h2>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                <div>
+                    <label>Müşteri Adı</label>
+                    <input type="text" id="customerName" placeholder="Ahmet Yılmaz">
+                </div>
+                <div>
+                    <label>Proje / İş Adı</label>
+                    <input type="text" id="projectName" placeholder="Örn: Drone Yedek Parçaları">
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>➕ Parça Ekle</h2>
+            <div style="display: grid; grid-template-columns: 2fr 1.5fr 1fr 1fr auto; gap: 10px; align-items: end;">
+                <div>
+                    <label>Parça Adı</label>
+                    <input type="text" id="pName" placeholder="Gövde">
+                </div>
+                <div>
+                    <label>Malzeme</label>
+                    <select id="pMat"></select>
+                </div>
+                <div>
+                    <label>Gr</label>
+                    <input type="number" id="pWeight" placeholder="0">
+                </div>
+                <div>
+                    <label>Saat</label>
+                    <input type="number" id="pTime" placeholder="0">
+                </div>
+                <button class="btn-primary" onclick="addPart()" style="margin-bottom: 2px;">EKLE</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>🛒 Parça Listesi</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Parça</th>
+                        <th>Malzeme</th>
+                        <th>Detay</th>
+                        <th style="text-align:right;">Tutar</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody id="partsBody"></tbody>
+            </table>
+
+            <div class="summary-bar">
+                <div class="summary-item">
+                    <span class="summary-label">ARA TOPLAM</span><br>
+                    <span id="displaySubTotal" style="font-size:1.1rem; font-weight:600;">0.00 TL</span>
+                </div>
+                <div class="summary-item">
+                    <span class="summary-label">KDV DAHİL GENEL TOPLAM</span><br>
+                    <span class="summary-value" id="displayGrandTotal">0.00 TL</span>
+                </div>
+            </div>
+
+            <button class="btn-print" onclick="window.print()">🖨️ Teklifi Yazdır / PDF Al</button>
+        </div>
+    </div>
+</div>
+
+<div id="printableArea">
+    <div class="invoice-header">
+        <div class="company-info">
+            <h1 id="printCompany">FİRMA ADI</h1>
+            <p>3D Modelleme ve Baskı Hizmetleri</p>
+            <p id="printDate" style="color:#666;"></p>
+        </div>
+        <div class="invoice-details">
+            <h2 style="border:none; margin:0;">FİYAT TEKLİFİ</h2>
+            <p><strong>Sayın:</strong> <span id="printCustomer"></span></p>
+            <p><strong>Proje:</strong> <span id="printProject"></span></p>
+        </div>
+    </div>
+
+    <table class="invoice-table">
+        <thead>
+            <tr>
+                <th>Açıklama / Parça Adı</th>
+                <th>Malzeme Cinsi</th>
+                <th>Ağırlık</th>
+                <th>Baskı Süresi</th>
+                <th style="text-align: right;">Fiyat</th>
+            </tr>
+        </thead>
+        <tbody id="printTableBody">
+            </tbody>
+    </table>
+
+    <div class="invoice-footer">
+        <div class="invoice-totals">
+            <div class="total-row">
+                <span>Ara Toplam:</span>
+                <span id="printSubTotal">0.00 ₺</span>
+            </div>
+            <div class="total-row">
+                <span>KDV (%<span id="printTaxRate"></span>):</span>
+                <span id="printTaxAmount">0.00 ₺</span>
+            </div>
+            <div class="total-row grand-total">
+                <span>GENEL TOPLAM:</span>
+                <span id="printGrandTotal">0.00 ₺</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="signature">
+        <div class="sign-box">
+            Teslim Eden<br><br>İmza
+        </div>
+        <div class="sign-box">
+            Teslim Alan / Onaylayan<br><br>İmza
+        </div>
+    </div>
+    
+    <div style="margin-top: 50px; font-size: 0.8rem; color: #999; text-align: center;">
+        Bu belge dijital ortamda hazırlanmıştır ve 15 gün süreyle geçerlidir.
+    </div>
+</div>
+
+<script>
+    // --- VERİ YÖNETİMİ ---
+    let data = {
+        company: "3D Maker Atölye",
+        elecPrice: 2.6,
+        power: 300,
+        margin: 50,
+        tax: 20,
+        filaments: [
+            { id: 1, name: 'PLA Standart', price: 500 },
+            { id: 2, name: 'PETG', price: 650 },
+            { id: 3, name: 'TPU (Esnek)', price: 850 }
+        ]
+    };
+    
+    let parts = [];
+
+    // Başlangıç
+    window.onload = function() {
+        const savedData = localStorage.getItem('3dProCalc_Data');
+        if(savedData) { data = JSON.parse(savedData); }
+        renderInputs();
+        renderFilaments();
+        updateSelect();
+    };
+
+    function saveData() {
+        // Inputlardan veriyi al
+        data.company = document.getElementById('myCompany').value;
+        data.elecPrice = parseFloat(document.getElementById('elecPrice').value) || 0;
+        data.power = parseFloat(document.getElementById('power').value) || 0;
+        data.margin = parseFloat(document.getElementById('margin').value) || 0;
+        data.tax = parseFloat(document.getElementById('tax').value) || 0;
+
+        localStorage.setItem('3dProCalc_Data', JSON.stringify(data));
+        updateCalculations(); // Ayar değişince fiyatları güncelle
+    }
+
+    function renderInputs() {
+        document.getElementById('myCompany').value = data.company;
+        document.getElementById('elecPrice').value = data.elecPrice;
+        document.getElementById('power').value = data.power;
+        document.getElementById('margin').value = data.margin;
+        document.getElementById('tax').value = data.tax;
+    }
+
+    // --- FILAMENT İŞLEMLERİ ---
+    function addFilament() {
+        const name = document.getElementById('newFilName').value;
+        const price = parseFloat(document.getElementById('newFilPrice').value);
+        if(name && price) {
+            data.filaments.push({ id: Date.now(), name, price });
+            saveData();
+            renderFilaments();
+            updateSelect();
+            document.getElementById('newFilName').value = '';
+            document.getElementById('newFilPrice').value = '';
+        }
+    }
+
+    function removeFilament(id) {
+        if(confirm('Silmek istiyor musunuz?')) {
+            data.filaments = data.filaments.filter(f => f.id !== id);
+            saveData();
+            renderFilaments();
+            updateSelect();
+        }
+    }
+
+    function renderFilaments() {
+        const list = document.getElementById('filamentList');
+        list.innerHTML = '';
+        data.filaments.forEach(f => {
+            list.innerHTML += `
+                <div class="filament-tag">
+                    <span><b>${f.name}</b> - ${f.price} TL</span>
+                    <button class="btn-sm btn-danger" onclick="removeFilament(${f.id})">Sil</button>
+                </div>
+            `;
+        });
+    }
+
+    function updateSelect() {
+        const sel = document.getElementById('pMat');
+        sel.innerHTML = '';
+        data.filaments.forEach(f => {
+            const opt = document.createElement('option');
+            opt.value = f.price;
+            opt.text = f.name;
+            sel.appendChild(opt);
+        });
+    }
+
+    // --- PARÇA İŞLEMLERİ ---
+    function addPart() {
+        const name = document.getElementById('pName').value || 'Parça';
+        const weight = parseFloat(document.getElementById('pWeight').value);
+        const time = parseFloat(document.getElementById('pTime').value);
+        const matSelect = document.getElementById('pMat');
+        
+        if(!weight || !time || !matSelect.value) { alert('Lütfen ağırlık ve süre girin.'); return; }
+
+        const matPrice = parseFloat(matSelect.value);
+        const matName = matSelect.options[matSelect.selectedIndex].text;
+
+        parts.push({ name, weight, time, matPrice, matName });
+        
+        document.getElementById('pName').value = '';
+        document.getElementById('pWeight').value = '';
+        document.getElementById('pTime').value = '';
+        document.getElementById('pName').focus();
+        
+        updateCalculations();
+    }
+
+    function removePart(index) {
+        parts.splice(index, 1);
+        updateCalculations();
+    }
+
+    function updateCalculations() {
+        const tbody = document.getElementById('partsBody');
+        const printBody = document.getElementById('printTableBody');
+        tbody.innerHTML = '';
+        printBody.innerHTML = '';
+
+        let subTotal = 0;
+
+        parts.forEach((p, i) => {
+            // Hesaplama
+            const matCost = (p.matPrice / 1000) * p.weight;
+            const elecCost = (data.power / 1000) * p.time * data.elecPrice;
+            const rawCost = matCost + elecCost;
+            const sellPrice = rawCost * (1 + (data.margin / 100));
+
+            subTotal += sellPrice;
+
+            // Web Arayüzü Satırı
+            tbody.innerHTML += `
+                <tr>
+                    <td><strong>${p.name}</strong></td>
+                    <td>${p.matName}</td>
+                    <td style="font-size:0.85rem; color:#666;">${p.weight}gr / ${p.time}sa</td>
+                    <td class="cost-cell" style="text-align:right;">${sellPrice.toFixed(2)} ₺</td>
+                    <td style="text-align:center;"><button class="btn-sm btn-danger" onclick="removePart(${i})">X</button></td>
+                </tr>
+            `;
+
+            // Yazdırma Arayüzü Satırı
+            printBody.innerHTML += `
+                <tr>
+                    <td>${p.name}</td>
+                    <td>${p.matName}</td>
+                    <td>${p.weight} gr</td>
+                    <td>${p.time} saat</td>
+                    <td style="text-align: right;">${sellPrice.toFixed(2)} ₺</td>
+                </tr>
+            `;
+        });
+
+        // Toplamlar
+        const taxAmount = subTotal * (data.tax / 100);
+        const grandTotal = subTotal + taxAmount;
+
+        // Ekrana Yaz
+        document.getElementById('displaySubTotal').innerText = subTotal.toFixed(2) + ' ₺';
+        document.getElementById('displayGrandTotal').innerText = grandTotal.toFixed(2) + ' ₺';
+
+        // Yazdırma Alanına Yaz
+        document.getElementById('printCompany').innerText = data.company;
+        document.getElementById('printCustomer').innerText = document.getElementById('customerName').value || '-';
+        document.getElementById('printProject').innerText = document.getElementById('projectName').value || '-';
+        
+        const d = new Date();
+        document.getElementById('printDate').innerText = `Tarih: ${d.getDate()}.${d.getMonth()+1}.${d.getFullYear()}`;
+        
+        document.getElementById('printSubTotal').innerText = subTotal.toFixed(2) + ' ₺';
+        document.getElementById('printTaxRate').innerText = data.tax;
+        document.getElementById('printTaxAmount').innerText = taxAmount.toFixed(2) + ' ₺';
+        document.getElementById('printGrandTotal').innerText = grandTotal.toFixed(2) + ' ₺';
+    }
+</script>
+
+</body>
+</html>
